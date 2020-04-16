@@ -9,25 +9,24 @@ def run_simulation(players, turn_number, round_number, copy_number):
     eliminated =[]
     for i in range(1, round_number + 1):
         scores = [0] * len(players)
-        #Generates random pairings
         random.shuffle(pool)
         if len(pool) % 2 == 0:
             for a in range(len(pool)):
                 if a % 2 == 0:
                     current_pair = pool[a:a + 2]
                     score1, score2 = run_pairing(players[current_pair[0]], players[current_pair[1]], turn_number)
-                    scores[current_pair[0]] = score1
-                    scores[current_pair[1]] = score2
+                    scores[current_pair[0]] = scores[current_pair[0]] + score1
+                    scores[current_pair[1]] = scores[current_pair[1]] + score2
         else:
             for a in range(len(pool)-1):
                 if a % 2 == 0:
                     current_pair = pool[a:a + 2]
                     score1, score2 = run_pairing(players[current_pair[0]], players[current_pair[1]], turn_number)
-                    scores[current_pair[0]] = score1
-                    scores[current_pair[1]] = score2
-        #Updates the pool based on the results of the round            
+                    scores[current_pair[0]] = scores[current_pair[0]] + score1
+                    scores[current_pair[1]] = scores[current_pair[1]] + score2
+        #Updates the pool based on the results of the round  
         total_score = sum(scores)
-        new_copy_numbers = [round(len(pool) * scores[i] / total_score) for i in range(len(players))]
+        new_copy_numbers = [round(copy_number * len(players) * scores[i] / total_score) for i in range(len(players))]
         pool =[]
         for count, player in zip(new_copy_numbers, players):
             pool.extend([players.index(player)] * count)
@@ -89,13 +88,8 @@ def run_pairing(player1, player2, turns):
 def score_calculation(your_history, their_history):
     score = 0
     for your_move, their_move in zip(your_history, their_history):
-        try:
-            if your_move + their_move <= 5:
-                score = score + your_move
-        except:
-            print(your_move)
-            print(their_move)
-            quit()
+        if your_move + their_move <= 5:
+            score = score + your_move
     return score
 
 turn_number = random.randint(90, 110)
